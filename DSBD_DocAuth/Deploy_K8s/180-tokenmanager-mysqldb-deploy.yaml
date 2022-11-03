@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docauth-mysqltokendb-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docauth-mysqltokendb-pods
+  template:
+    metadata:
+      labels:
+        app: docauth-mysqltokendb-pods
+    spec:
+      containers:
+        - name: mysqltokendb
+          image: mysql/mysql-server:8.0.23
+          ports:
+            - containerPort: 3307
+          envFrom:
+            - secretRef:
+                name: tokenmanager-mysqltokendb-secret-file
+          volumeMounts:
+            - mountPath: /data/db
+              name: tokenservice-db-volume
+      volumes:
+        - name: tokenservice-db-volume
+          hostPath:
+            path: /tokenservice-db-volume
+            type: DirectoryOrCreate

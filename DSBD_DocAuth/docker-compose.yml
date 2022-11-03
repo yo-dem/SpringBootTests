@@ -1,0 +1,99 @@
+version: '3.4'
+
+x-common-variables: &common-variables
+  DATASOURCE_PORT: ${DB_PORT}
+  DATASOURCE_USER: ${DB_USER}
+  DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+services:
+  mysqluserdb:
+    container_name: mysqluserdb
+    image: mysql/mysql-server:8.0.23
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${USERMANAGER_DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - user_db_storage:/var/lib/mysql
+
+  mysqltokendb:
+    container_name: mysqltokendb
+    image: mysql/mysql-server:8.0.23
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=${TOKENMANAGER_DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - token_db_storage:/var/lib/mysql
+
+  mysqldocumentdb:
+    container_name: mysqldocumentdb
+    image: mysql/mysql-server:8.0.23
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_DATABASE=${DOCUMENTMANAGER_DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - document_db_storage:/var/lib/mysql
+
+  usermanager:
+    container_name: usermanager
+    image: esseodio/usermanagerimage
+    build:
+      context: .
+      dockerfile: MicroServices/UserManager/Dockerfile
+    depends_on:
+      - mysqluserdb
+    ports:
+      - "1111:8080"
+    restart: always
+    environment:
+      <<: *common-variables
+      USERMANAGER_DATASOURCE_HOST: ${USERMANAGER_DB_HOST}
+      USERMANAGER_DATASOURCE_NAME: ${USERMANAGER_DB_NAME}
+
+  tokenmanager:
+    container_name: tokenmanager
+    image: esseodio/tokenmanagerimage
+    build:
+      context: .
+      dockerfile: MicroServices/TokenManager/Dockerfile
+    depends_on:
+      - mysqltokendb
+    ports:
+      - "2222:8080"
+    restart: always
+    environment:
+      <<: *common-variables
+      TOKENMANAGER_DATASOURCE_HOST: ${TOKENMANAGER_DB_HOST}
+      TOKENMANAGER_DATASOURCE_NAME: ${TOKENMANAGER_DB_NAME}
+
+  documentmanager:
+    container_name: documentmanager
+    image: esseodio/documentmanagerimage
+    build:
+      context: .
+      dockerfile: MicroServices/DocumentManager/Dockerfile
+    depends_on:
+      - mysqldocumentdb
+    ports:
+      - "3333:8080"
+    restart: always
+    environment:
+      <<: *common-variables
+      DOCUMENTMANAGER_DATASOURCE_HOST: ${DOCUMENTMANAGER_DB_HOST}
+      DOCUMENTMANAGER_DATASOURCE_NAME: ${DOCUMENTMANAGER_DB_NAME}
+
+volumes:
+  user_db_storage:
+  token_db_storage:
+  document_db_storage:

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  USERMANAGER_DATASOURCE_HOST: "docauth-mysqluserdb-service"
+  DATASOURCE_PORT: "3306"
+  USERMANAGER_DATASOURCE_NAME: "UserDB"
+  DATASOURCE_USER: "docauth"
+  DATASOURCE_PASSWORD: "docauth"
+metadata:
+  name: usermanager-mysqluserdb-env-file

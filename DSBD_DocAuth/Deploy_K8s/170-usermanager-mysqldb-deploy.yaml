@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docauth-mysqluserdb-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docauth-mysqluserdb-pods
+  template:
+    metadata:
+      labels:
+        app: docauth-mysqluserdb-pods
+    spec:
+      containers:
+        - name: mysqluserdb
+          image: mysql/mysql-server:8.0.23
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: usermanager-mysqluserdb-secret-file
+          volumeMounts:
+            - mountPath: /data/db
+              name: userservice-db-volume
+      volumes:
+        - name: userservice-db-volume
+          hostPath:
+            path: /userservice-db-volume
+            type: DirectoryOrCreate

@@ -1,0 +1,14 @@
+apiVersion : v1
+kind: Service
+metadata:
+  name: docauth-tokenmanager-service
+  labels:
+    svc: docauth-tokenmanager
+spec:
+  selector:
+    app: docauth-tokenmanager-pods
+  #type: NodePort
+  ports:
+    - protocol: TCP
+      port: 2222
+      targetPort: 8080

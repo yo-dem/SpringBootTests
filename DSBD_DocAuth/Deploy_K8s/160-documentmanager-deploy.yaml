@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docauth-documentmanager-deploy
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docauth-documentmanager-pods
+  template:
+    metadata:
+      labels:
+        app: docauth-documentmanager-pods
+    spec:
+      containers:
+        - name: documentmanager
+          image: esseodio/documentmanagerimage
+          ports:
+            - containerPort: 3333
+          envFrom:
+            - configMapRef:
+                name: documentmanager-mysqldocumentdb-env-file
+            - secretRef:
+                name: documentmanager-mysqldocumentdb-secret-file

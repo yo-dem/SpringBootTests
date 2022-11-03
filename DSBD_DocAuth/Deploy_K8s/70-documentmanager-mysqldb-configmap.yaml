@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  DOCUMENTMANAGER_DATASOURCE_HOST: "docauth-mysqldocumentdb-service"
+  DATASOURCE_PORT: "3306"
+  DOCUMENTMANAGER_DATASOURCE_NAME: "DocumentDB"
+  DATASOURCE_USER: "docauth"
+  DATASOURCE_PASSWORD: "docauth"
+metadata:
+  name: documentmanager-mysqldocumentdb-env-file

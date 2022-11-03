@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docauth-mysqldocumentdb-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docauth-mysqldocumentdb-pods
+  template:
+    metadata:
+      labels:
+        app: docauth-mysqldocumentdb-pods
+    spec:
+      containers:
+        - name: mysqldocumentdb
+          image: mysql/mysql-server:8.0.23
+          ports:
+            - containerPort: 3308
+          envFrom:
+            - secretRef:
+                name: documentmanager-mysqldocumentdb-secret-file
+          volumeMounts:
+            - mountPath: /data/db
+              name: documentservice-db-volume
+      volumes:
+        - name: documentservice-db-volume
+          hostPath:
+            path: /documentservice-db-volume
+            type: DirectoryOrCreate

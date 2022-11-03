@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docauth-tokenmanager-deploy
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docauth-tokenmanager-pods
+  template:
+    metadata:
+      labels:
+        app: docauth-tokenmanager-pods
+    spec:
+      containers:
+        - name: tokenmanager
+          image: esseodio/tokenmanagerimage
+          ports:
+            - containerPort: 2222
+          envFrom:
+            - configMapRef:
+                name: tokenmanager-mysqltokendb-env-file
+            - secretRef:
+                name: tokenmanager-mysqltokendb-secret-file
